@@ -169,6 +169,8 @@ function pullRequestEventMoveCard() {
         return [];
       }
 
+      console.log("cardsOnList.length", cardsOnList.length);
+      
       // Extracting Trello card URLs and filtering...
       const trelloCardUrlsInPr = pullRequest?.body?.match(/https:\/\/trello\.com\/c\/[a-zA-Z0-9]+/g) || [];
       const cardsReferencedInPr = cardsOnList.filter(card => 
