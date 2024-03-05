@@ -150,6 +150,8 @@ function pullRequestEventMoveCard() {
   const targetList: string = process.env.TRELLO_TARGET_LIST_ID as string;
   const additionalMemberIds: string[] = [];
 
+  console.log("running pullRequestEventMoveCard");
+
   if (
     (sourceList && !validateListExistsOnBoard(sourceList)) ||
     !targetList ||
