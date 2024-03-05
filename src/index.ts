@@ -168,30 +168,15 @@ function pullRequestEventMoveCard() {
         core.setFailed(cardsOnList);
         return [];
       }
-      const referencedIssuesInGh: string[] = pullRequest?.body?.match(/#[1-9][0-9]*/) || [];
 
-      return cardsOnList
-        .filter((card) => {
-          const haystack = `${card.name} ${card.desc}`;
-          const issueRefsOnCurrentCard = haystack.match(/#[1-9][0-9]*/) || [];
+      // Extracting Trello card URLs and filtering...
+      const trelloCardUrlsInPr = pullRequest?.body?.match(/https:\/\/trello\.com\/c\/[a-zA-Z0-9]+/g) || [];
+      const cardsReferencedInPr = cardsOnList.filter(card => 
+        trelloCardUrlsInPr.some(url => card.shortUrl === url || card.url === url)
+      );
 
-          const crossMatchIssues = issueRefsOnCurrentCard.filter((issueRef) =>
-            referencedIssuesInGh.includes(issueRef),
-          );
-          return crossMatchIssues.length !== 0;
-        })
-        .filter((card) => {
-          // Filter cards to those which refer to the Github repository via any attachment.
-          // Note that link in card.desc is not satisfactory.
-          return getCardAttachments(card.id).then((attachments) => {
-            if (typeof attachments === 'string') {
-              return false;
-            }
-
-            attachments.find((attachment) => attachment.url.startsWith(repoHtmlUrl));
-            return attachments.length !== 0;
-          });
-        });
+      // If you need to use `cardsReferencedInPr` in the next `.then`, you would typically return it here.
+      return cardsReferencedInPr;
     })
     // Final list of cards that need to be moved to target list.
     .then((cardsToBeMoved) => {
